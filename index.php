@@ -1,11 +1,20 @@
 <?php include "usuarios.php";
+    session_start();
+    $_SESSION = array();
+    session_destroy();
+    
     $myuser = new usuarios();
     if(isset($_POST['f_mail']) and isset($_POST['f_senha'])){
         $myuser->setEmail($_POST['f_mail']);
         $myuser->setSenha($_POST['f_senha']);
         $resultado = $myuser->login();
         if($resultado > 0){
-            Header("Location:cadastro.php");
+            guardaId($resultado);
+            if($_POST['f_senha'] == '123456') {
+                Header("Location:novasenha.php");
+            }else {
+                Header("Location:cadastro.php");
+            }
         } else {
             exibe_pagina('Login ou senha incorreto.');
         }
@@ -36,5 +45,10 @@
         echo "</b>";
         echo "</body>";
         echo "</html>";
+    }
+    
+    function guardaId($valor) {
+        session_start();
+        $_SESSION['userId'] = $valor;
     }
 ?>

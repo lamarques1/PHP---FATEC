@@ -1,5 +1,12 @@
 <?php
 	include "usuarios.php";
+	
+	session_start();
+	if(!isset($_SESSION['userId'])) {
+	    $_SESSION = array();
+	    session_destroy();
+	    Header('Location:index.php');
+	}
 ?>
 <html>
 	<head>
@@ -13,6 +20,7 @@
 	//Instancio um objeto do tipo usuarios()
 	$myuser = new usuarios();
 	
+
 	//Se chegam os dados incluindo o id, mostro o form preenchido e faço a alteração
 	if(isset($_POST['f_nome']) and isset($_POST['f_mail']) and isset($_POST['f_senha']) and isset($_POST['f_id'])){
 
@@ -42,6 +50,21 @@
 		echo "<br/>";
 		echo "<input type=submit value=Enviar>";
 		echo "</form>";		
+	}
+	//Se chega id e senha, faço o reset de senha do usuário
+	elseif(isset($_POST['f_id']) and isset($_POST['f_senha'])){
+	    $myuser->setId($_POST['f_id']);
+	    $myuser->setId($_POST['f_senha']);
+	    $myuser->redefinirSenha($myuser->getId(), $myuser->getSenha());
+	    echo "<form method=POST action=".$_SERVER['PHP_SELF'].">";
+		echo "<H2>Nome: <input type=text name=f_nome></H2>";
+		echo "<br/>";
+		echo "<H2>Email: <input type=text name=f_mail></H2>";
+		echo "<br/>";
+		echo "<H2>Senha: <input type=password name=f_senha></H2>";
+		echo "<br/>";
+		echo "<input type=submit value=Enviar>";
+		echo "</form>";	
 	}
 	//Se chega somente o id faço a exclusão e mostro o formulário para cadastro
 	elseif(isset($_POST['f_id'])){
@@ -98,13 +121,22 @@
 					<form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 						<input type="hidden" name="f_id" value=<?php echo "$value->id";?>>
 						<input type="submit" value="Excluir">
-					</form>						
+					</form>	
+					<form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+					    <input type="hidden" name="f_id" value=<?php echo "$value->id";?>>
+					    <input type="hidden" name="f_senha" value="123456";?>>
+						<input type="submit" value="Resetar senha">
+					</form>
 				</td>
 		  </tr>
 			<?php endforeach;?>	
 		</table>
 	</div>
-		
+	<div>
+	    <form method="POST" action="index.php">
+			<input type="submit" name="flagSair" value="Sair">
+		</form>
+	</div>
 		</b>
 	</body>
 </html>
